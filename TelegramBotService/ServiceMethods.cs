@@ -654,7 +654,24 @@ namespace TelegramBotService
                     {
                         foreach (var to in _SendAlertTo.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries))
                         {
-                            await telegramBotClient.SendTextMessageAsync(to, finalString, Telegram.Bot.Types.Enums.ParseMode.Default, true);
+                            try
+                            {
+                                await telegramBotClient.SendTextMessageAsync(to, finalString, Telegram.Bot.Types.Enums.ParseMode.Default, true);
+                            }
+                            catch(Exception ex)
+                            {
+                                #region Exception
+                                List<string> list = new List<string>();
+                                list.Add("Class name: ServiceMethods, Method name: TelegramBotAlertSendInitiator - _SendAlertTo");
+                                list.Add("Exception occurred for Name: " + e.Message.Chat.FirstName + " " + e.Message.Chat.LastName + ", Username: " + e.Message.Chat.Username + ", Message: " + e.Message.Text);
+                                list.Add("Message:  " + ex?.Message?.ToString());
+                                list.Add("StackTrace:  " + ex?.StackTrace?.ToString());
+                                list.Add("InnerException.Message:  " + Convert.ToString(ex?.InnerException?.Message));
+                                list.Add("InnerException.StackTrace:  " + Convert.ToString(ex?.InnerException?.StackTrace));
+                                await telegramBotClient.SendTextMessageAsync(1715334607, exceptionStringBuilder(list.ToArray()));
+                                #endregion
+                                continue;
+                            }
                         }
                     }
                 }
