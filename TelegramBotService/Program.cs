@@ -11,7 +11,6 @@ namespace TelegramBotService
     {
         static void Main(string[] args)
         {
-            //ServiceMethods.TelegramBotGameAPIInitiator(0,null,null);
             var exitCode = HostFactory.Run(x =>
             {
                 x.Service<ServiceMethods>(s =>

@@ -38,13 +38,13 @@ namespace TelegramBotService
 
         public void Start()
         {
-            telegramBotClient.SendTextMessageAsync(1715334607, "***** TelegramBotService is Started *****");
+            telegramBotClient.SendTextMessageAsync(1715334607, Constant.ServiceStartMessage);
             TelegramBotInitiator();
         }
 
         public void Stop()
         {
-            telegramBotClient.SendTextMessageAsync(1715334607, "***** TelegramBotService is Stopped *****");
+            telegramBotClient.SendTextMessageAsync(1715334607, Constant.ServiceStopMessage);
         }
 
         #endregion
@@ -89,7 +89,7 @@ namespace TelegramBotService
             list.Add("DISK Usage: " + diskCounter.NextValue() + "%");
             #endregion
 
-            list.Add("***** Telegram BOT Service is running *****");
+            list.Add(Constant.ServiceRunningMessage);
             return list;
         }
 
@@ -180,7 +180,7 @@ namespace TelegramBotService
         {
             StringBuilder errMsg = new StringBuilder();
             errMsg.AppendLine();
-            errMsg.AppendLine("Exception occured at: " + DateTime.Now);
+            errMsg.AppendLine("Exception occured at: " + DateTime.Now.ToString(Constant.DateTimeFormat));
             errMsg.AppendLine();
             foreach (var l in str)
             {
@@ -244,7 +244,7 @@ namespace TelegramBotService
         {
             try
             {
-                txtWriter.Write("\r\n" + logMessage + " Date: " + DateTime.Now.ToLongDateString() + " " + DateTime.Now.ToLongTimeString());
+                txtWriter.Write("\r\n" + logMessage + " Date: " + DateTime.Now.ToString(Constant.DateTimeFormat));
             }
             catch (Exception ex)
             {
@@ -476,21 +476,21 @@ namespace TelegramBotService
                 var Los_Angeles = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
                 list.Add("World Date Time");
                 list.Add("");
-                list.Add("UTC : " + DateTime.UtcNow.ToString("dd-MMMM-yyyy  hh:mm tt"));
+                list.Add("UTC : " + DateTime.UtcNow.ToString(Constant.DateTimeFormat));
                 list.Add("");
-                list.Add("India: " + DateTime.Now.ToString("dd-MMMM-yyyy  hh:mm tt"));
+                list.Add("India: " + DateTime.Now.ToString(Constant.DateTimeFormat));
                 list.Add("");
-                list.Add("UK: " + TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.Local, britishZone).ToString("dd-MMMM-yyyy  hh:mm tt"));
+                list.Add("UK: " + TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.Local, britishZone).ToString(Constant.DateTimeFormat));
                 list.Add("");
-                list.Add("Melbourne: " + TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.Local, aus).ToString("dd-MMMM-yyyy  hh:mm tt"));
+                list.Add("Melbourne: " + TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.Local, aus).ToString(Constant.DateTimeFormat));
                 list.Add("");
-                list.Add("Ontario: " + TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.Local, can).ToString("dd-MMMM-yyyy  hh:mm tt"));
+                list.Add("Ontario: " + TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.Local, can).ToString(Constant.DateTimeFormat));
                 list.Add("");
-                list.Add("Dubai: " + TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.Local, uae).ToString("dd-MMMM-yyyy  hh:mm tt"));
+                list.Add("Dubai: " + TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.Local, uae).ToString(Constant.DateTimeFormat));
                 list.Add("");
-                list.Add("Amsterdam/ Berlin: " + TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.Local, ams).ToString("dd-MMMM-yyyy  hh:mm tt"));
+                list.Add("Amsterdam/ Berlin: " + TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.Local, ams).ToString(Constant.DateTimeFormat));
                 list.Add("");
-                list.Add("Los Angeles: " + TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.Local, Los_Angeles).ToString("dd-MMMM-yyyy  hh:mm tt"));
+                list.Add("Los Angeles: " + TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.Local, Los_Angeles).ToString(Constant.DateTimeFormat));
                 await telegramBotClient.SendTextMessageAsync(e.Message.Chat.Id, StringBuilder(list.ToArray()));
             }
             else if (e.Message.Text.ToLower().Contains("weather"))
@@ -658,7 +658,7 @@ namespace TelegramBotService
                             {
                                 await telegramBotClient.SendTextMessageAsync(to, finalString, Telegram.Bot.Types.Enums.ParseMode.Default, true);
                             }
-                            catch(Exception ex)
+                            catch (Exception ex)
                             {
                                 #region Exception
                                 List<string> list = new List<string>();
@@ -1326,39 +1326,47 @@ namespace TelegramBotService
                     foreach (var i in result.Elements)
                     {
                         list = new List<string>();
-                        foreach (var i_2 in i.Promotions.PromotionalOffers)
+                        if (i.Promotions != null)
                         {
-                            list.Add("Game Name: " + i.Title);
-                            foreach (var i_3 in i_2.PromotionalOffers)
+                            foreach (var i_2 in i.Promotions?.PromotionalOffers)
                             {
-                                list.Add("Start Date: " + i_3.StartDate?.DateTime);
-                                list.Add("End Date: " + i_3.EndDate?.DateTime);
+                                list.Add("Please find the below details for free game:");
+                                list.Add("Game Name: " + i.Title);
+                                addFileEntry = i.Title;
+                                list.Add("Game Description: " + i.Description);
+                                foreach (var i_3 in i_2.PromotionalOffers)
+                                {
+                                    list.Add("Start Date: " + i_3.StartDate?.LocalDateTime.ToString(Constant.DateTimeFormat));
+                                    list.Add("End Date: " + i_3.EndDate?.LocalDateTime.ToString(Constant.DateTimeFormat));
+                                }
+                                list.Add("URL: " + "https://www.epicgames.com/store/en-US/");
                             }
                         }
                         if (list.Count > 0 && (i.Promotions.PromotionalOffers.Length > 0 || i.Promotions.UpcomingPromotionalOffers.Length > 0))
                         {
-                            list.Add("URL: " + "https://www.epicgames.com/store/en-US/");
                             finalList.Add(list);
                         }
                     }
                     foreach (var i in result.Elements)
                     {
                         list = new List<string>();
-
-                        foreach (var i_2 in i.Promotions.UpcomingPromotionalOffers)
+                        if (i.Promotions != null)
                         {
-                            list.Add("***** Upcoming Offers *****");
-                            list.Add("Game Name: " + i.Title);
-                            foreach (var i_3 in i_2.PromotionalOffers)
+                            foreach (var i_2 in i.Promotions.UpcomingPromotionalOffers)
                             {
-                                list.Add("Start Date: " + i_3.StartDate?.DateTime);
-                                list.Add("End Date: " + i_3.EndDate?.DateTime);
+                                list.Add("***** Upcoming Offers *****");
+                                list.Add("Game Name: " + i.Title);
+                                foreach (var i_3 in i_2.PromotionalOffers)
+                                {
+                                    list.Add("Start Date: " + i_3.StartDate?.LocalDateTime.ToString(Constant.DateTimeFormat));
+                                    list.Add("End Date: " + i_3.EndDate?.LocalDateTime.ToString(Constant.DateTimeFormat));
+                                }
                             }
                         }
                         if (list.Count > 0 && (i.Promotions.PromotionalOffers.Length > 0 || i.Promotions.UpcomingPromotionalOffers.Length > 0))
                         {
                             finalList.Add(list);
-                        }                        
+                        }
                     }
                 }
                 if (finalList.Count > 0)
@@ -1776,7 +1784,7 @@ namespace TelegramBotService
                     try
                     {
                         List<string> list = new List<string>();
-                        list.Add("Stock report for: " + finalValuePairs["01. symbol"] + " for date: " + DateTime.Now);
+                        list.Add("Stock report for: " + finalValuePairs["01. symbol"] + " for date: " + DateTime.Now.ToString(Constant.DateTimeFormat));
                         list.Add("");
                         list.Add("Open: " + finalValuePairs["02. open"]);
                         list.Add("High: " + finalValuePairs["03. high"]);

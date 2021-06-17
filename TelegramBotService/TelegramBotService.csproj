@@ -59,6 +59,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constant.cs" />
     <Compile Include="CovidInfoModel.cs" />
     <Compile Include="EpicAPIModel.cs" />
     <Compile Include="GoogleSearch.cs" />
