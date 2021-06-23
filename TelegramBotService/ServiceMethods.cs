@@ -129,6 +129,7 @@ namespace TelegramBotService
         #endregion
 
         #region String Builders
+
         public static string emailStringBuilder(String[] str = null, List<List<string>> listString = null)
         {
             StringBuilder errMsg = new StringBuilder();
@@ -214,10 +215,10 @@ namespace TelegramBotService
                 .Select(i => str.Substring(i * chunkSize, chunkSize));
         }
 
-
         #endregion
 
         #region Log Writing
+
         public static void LogWrite(string logMessage)
         {
             if (Convert.ToInt32(ConfigurationManager.AppSettings["isLogging"]) == 1)
