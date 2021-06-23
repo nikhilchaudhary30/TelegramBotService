@@ -29,7 +29,6 @@ namespace TelegramBotService
 
         private static Dictionary<int, string> URLs { get; set; }
         static TelegramBotClient telegramBotClient = new TelegramBotClient(Convert.ToString(ConfigurationManager.AppSettings["TelegramBotToken"]));
-        //static TelegramBotClient telegramBotClient = new TelegramBotClient("1827489582:AAE_2P-X0d-fII98Rn4ynVF_qBMO4J-tV5I");
 
         public ServiceMethods()
         {
