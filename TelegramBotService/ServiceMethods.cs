@@ -29,7 +29,7 @@ namespace TelegramBotService
 
         private static Dictionary<int, string> URLs { get; set; }
         static TelegramBotClient telegramBotClient = new TelegramBotClient(Convert.ToString(ConfigurationManager.AppSettings["TelegramBotToken"]));
-
+        //static TelegramBotClient telegramBotClient = new TelegramBotClient("1827489582:AAE_2P-X0d-fII98Rn4ynVF_qBMO4J-tV5I");
 
         public ServiceMethods()
         {
@@ -604,6 +604,7 @@ namespace TelegramBotService
                 if (txt.Length > 1)
                 {
                     TelegramBotInsta360GO2StockAPIInitiator(e.Message.Chat.Id, e.Message.Text.Split(' ', (char)2)[1], e);
+                    TelegramBotInsta360XOneStockAPIInitiator(e.Message.Chat.Id, e.Message.Text.Split(' ', (char)2)[1], e);
                 }
             }
             else if (e.Message.Text.ToLower().Contains("request"))
@@ -1829,6 +1830,7 @@ namespace TelegramBotService
 
         public async static void TelegramBotPS5StockAPIInitiator(long ID, string stock, Telegram.Bot.Args.MessageEventArgs e = null)
         {
+            await telegramBotClient.SendTextMessageAsync(e.Message.Chat.Id, "Please wait while we're processing your request...");
             WebReqInitiator Client = new WebReqInitiator();
             //while (true)
             //{
@@ -1865,6 +1867,7 @@ namespace TelegramBotService
 
         public async static void TelegramBotInsta360GO2StockAPIInitiator(long ID, string stock, Telegram.Bot.Args.MessageEventArgs e = null)
         {
+            await telegramBotClient.SendTextMessageAsync(e.Message.Chat.Id, "Please wait while we're processing your request...");
             //var client = new RestClient("https://www.amazon.in/dp/B08Y1P3CQ8");
             //client.Timeout = -1;
             //var request = new RestRequest(Method.GET);
@@ -1888,7 +1891,37 @@ namespace TelegramBotService
                 await telegramBotClient.SendTextMessageAsync(e.Message.Chat.Id, "Insta360 GO 2 is available! on https://www.amazon.in/dp/B08Y1P3CQ8");
             }
             if (!data)
-                await telegramBotClient.SendTextMessageAsync(e.Message.Chat.Id, "Not in stock yet!");
+                await telegramBotClient.SendTextMessageAsync(e.Message.Chat.Id, "Insta360 GO 2 -- Not in stock yet!");
+            //}
+        }
+
+        public async static void TelegramBotInsta360XOneStockAPIInitiator(long ID, string stock, Telegram.Bot.Args.MessageEventArgs e = null)
+        {
+            await telegramBotClient.SendTextMessageAsync(e.Message.Chat.Id, "Please wait while we're processing your request...");
+            //var client = new RestClient("https://www.amazon.in/dp/B08M3QCXKP/");
+            //client.Timeout = -1;
+            //var request = new RestRequest(Method.GET);
+            //while (true)
+            //{
+            //    IRestResponse response = client.Execute(request);
+            //    var isAvailable = !response.Content.Contains("<span class=\"a-color-price a-text-bold\">Currently unavailable.</span>");
+            //    if (isAvailable)
+            //    {
+            //        await telegramBotClient.SendTextMessageAsync(e.Message.Chat.Id, "Insta360 GO 2 is available! on https://www.amazon.in/dp/B08M3QCXKP");
+            //    }
+            //}
+
+            WebReqInitiator Client = new WebReqInitiator();
+            //while (true)
+            //{
+            string req = Client.GetHTML("https://www.amazon.in/dp/B08M3QCXKP/");
+            var data = !req.Contains("<span class=\"a-color-price a-text-bold\">Currently unavailable.</span>");
+            if (data)
+            {
+                await telegramBotClient.SendTextMessageAsync(e.Message.Chat.Id, "Insta360 ONE X2 is available! on https://www.amazon.in/dp/B08M3QCXKP");
+            }
+            if (!data)
+                await telegramBotClient.SendTextMessageAsync(e.Message.Chat.Id, "Insta360 ONE X2 -- Not in stock yet!");
             //}
         }
 
