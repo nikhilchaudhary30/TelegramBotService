@@ -18,6 +18,7 @@ using System.Media;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 using Telegram.Bot;
 
@@ -44,6 +45,7 @@ namespace TelegramBotService
         public void Stop()
         {
             telegramBotClient.SendTextMessageAsync(1715334607, Constant.ServiceStopMessage);
+            System.Threading.Thread.Sleep(5000);
         }
 
         #endregion
@@ -69,7 +71,14 @@ namespace TelegramBotService
             byte[] data = wc.DownloadData("http://google.com");
             DateTime dt2 = DateTime.Now;
             list.Add("Internet Status: " + Math.Round((data.Length / 1024) / (dt2 - dt1).TotalSeconds, 2) + " Kb/Sec");
-            list.Add("Host Name: " + Dns.GetHostName().ToString());
+            if (Dns.GetHostName().ToString().ToLower() == "batman")
+            {
+                list.Add("Host Name: Device I - " + Dns.GetHostName().ToString());
+            }
+            else
+            {
+                list.Add("Host Name: Device II - " + Dns.GetHostName().ToString());
+            }
             #endregion
 
             #region Memory Info
@@ -236,6 +245,16 @@ namespace TelegramBotService
                 }
                 catch (Exception ex)
                 {
+                    #region Exception
+                    List<string> list = new List<string>();
+                    list.Add("ServiceName: TelegramBotService, ClassName: ServiceMethods, MethodName: LogWrite");
+                    list.Add("Message:  " + ex?.Message?.ToString());
+                    list.Add("StackTrace:  " + ex?.StackTrace?.ToString());
+                    list.Add("InnerException.Message:  " + Convert.ToString(ex?.InnerException?.Message));
+                    list.Add("InnerException.StackTrace:  " + Convert.ToString(ex?.InnerException?.StackTrace));
+                    telegramBotClient.SendTextMessageAsync(1715334607, exceptionStringBuilder(list.ToArray()));
+                    System.Threading.Thread.Sleep(5000);
+                    #endregion
                 }
             }
         }
@@ -248,6 +267,16 @@ namespace TelegramBotService
             }
             catch (Exception ex)
             {
+                #region Exception
+                List<string> list = new List<string>();
+                list.Add("ServiceName: TelegramBotService, ClassName: ServiceMethods, MethodName: Log");
+                list.Add("Message:  " + ex?.Message?.ToString());
+                list.Add("StackTrace:  " + ex?.StackTrace?.ToString());
+                list.Add("InnerException.Message:  " + Convert.ToString(ex?.InnerException?.Message));
+                list.Add("InnerException.StackTrace:  " + Convert.ToString(ex?.InnerException?.StackTrace));
+                telegramBotClient.SendTextMessageAsync(1715334607, exceptionStringBuilder(list.ToArray()));
+                System.Threading.Thread.Sleep(5000);
+                #endregion
             }
         }
         #endregion
@@ -258,9 +287,25 @@ namespace TelegramBotService
 
         public static void TelegramBotInitiator()
         {
-            telegramBotClient.StartReceiving();
-            telegramBotClient.OnMessage += TelegramBotClient_OnMessage;
-            telegramBotClient.OnMessageEdited += TelegramBotClient_OnMessage;
+            try
+            {
+                telegramBotClient.StartReceiving();
+                telegramBotClient.OnMessage += TelegramBotClient_OnMessage;
+                telegramBotClient.OnMessageEdited += TelegramBotClient_OnMessage;
+            }
+            catch (Exception ex)
+            {
+                #region Exception
+                List<string> list = new List<string>();
+                list.Add("ServiceName: TelegramBotService, ClassName: ServiceMethods, MethodName: TelegramBotInitiator");
+                list.Add("Message:  " + ex?.Message?.ToString());
+                list.Add("StackTrace:  " + ex?.StackTrace?.ToString());
+                list.Add("InnerException.Message:  " + Convert.ToString(ex?.InnerException?.Message));
+                list.Add("InnerException.StackTrace:  " + Convert.ToString(ex?.InnerException?.StackTrace));
+                telegramBotClient.SendTextMessageAsync(1715334607, exceptionStringBuilder(list.ToArray()));
+                System.Threading.Thread.Sleep(5000);
+                #endregion
+            }
         }
 
         private async static void TelegramBotClient_OnMessage(object sender, Telegram.Bot.Args.MessageEventArgs e)
@@ -540,6 +585,7 @@ namespace TelegramBotService
             }
             else if (e.Message.Text.ToLower() == "ranzo")
             {
+                string file = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\RanzoYT.PNG";
                 List<string> list = new List<string>();
                 list.Add("Hey welcome to best gaming channel ever");
                 list.Add("Subscribe Ranzo YT: " + "https://www.youtube.com/c/RanzoYT");
@@ -557,7 +603,7 @@ namespace TelegramBotService
                 list.Add("");
                 list.Add("A Valorant Montage: " + "https://www.youtube.com/watch?v=-hYjgI1oZxY");
                 list.Add("");
-                using (var stream = File.Open(Convert.ToString(ConfigurationManager.AppSettings["PhotoPath"]), FileMode.Open))
+                using (var stream = File.Open(file, FileMode.Open))
                 {
                     var rep = await telegramBotClient.SendPhotoAsync(e.Message.Chat.Id, stream, StringBuilder(list.ToArray()));
                 }
@@ -630,7 +676,7 @@ namespace TelegramBotService
             StringBuilder sb;
             try
             {
-                string file = Convert.ToString(ConfigurationManager.AppSettings["SendAlertPath"]);
+                string file = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\SendAlert.txt";
                 string _SendAlertTo = Convert.ToString(ConfigurationManager.AppSettings["SendAlertTo"]);
                 sb = new StringBuilder();
 
@@ -663,13 +709,14 @@ namespace TelegramBotService
                             {
                                 #region Exception
                                 List<string> list = new List<string>();
-                                list.Add("Class name: ServiceMethods, Method name: TelegramBotAlertSendInitiator - _SendAlertTo");
+                                list.Add("ServiceName: TelegramBotService, ClassName: ServiceMethods, MethodName: TelegramBotAlertSendInitiator - _SendAlertTo");
                                 list.Add("Exception occurred for Name: " + e.Message.Chat.FirstName + " " + e.Message.Chat.LastName + ", Username: " + e.Message.Chat.Username + ", Message: " + e.Message.Text);
                                 list.Add("Message:  " + ex?.Message?.ToString());
                                 list.Add("StackTrace:  " + ex?.StackTrace?.ToString());
                                 list.Add("InnerException.Message:  " + Convert.ToString(ex?.InnerException?.Message));
                                 list.Add("InnerException.StackTrace:  " + Convert.ToString(ex?.InnerException?.StackTrace));
                                 await telegramBotClient.SendTextMessageAsync(1715334607, exceptionStringBuilder(list.ToArray()));
+                                System.Threading.Thread.Sleep(5000);
                                 #endregion
                                 continue;
                             }
@@ -681,13 +728,14 @@ namespace TelegramBotService
             {
                 #region Exception
                 List<string> list = new List<string>();
-                list.Add("Class name: ServiceMethods, Method name: TelegramBotAlertSendInitiator");
+                list.Add("ServiceName: TelegramBotService, ClassName: ServiceMethods, MethodName: TelegramBotAlertSendInitiator");
                 list.Add("Exception occurred for Name: " + e.Message.Chat.FirstName + " " + e.Message.Chat.LastName + ", Username: " + e.Message.Chat.Username + ", Message: " + e.Message.Text);
                 list.Add("Message:  " + ex?.Message?.ToString());
                 list.Add("StackTrace:  " + ex?.StackTrace?.ToString());
                 list.Add("InnerException.Message:  " + Convert.ToString(ex?.InnerException?.Message));
                 list.Add("InnerException.StackTrace:  " + Convert.ToString(ex?.InnerException?.StackTrace));
                 await telegramBotClient.SendTextMessageAsync(1715334607, exceptionStringBuilder(list.ToArray()));
+                System.Threading.Thread.Sleep(5000);
                 #endregion
             }
         }
@@ -1291,13 +1339,14 @@ namespace TelegramBotService
                 {
                     #region Exception
                     List<string> list = new List<string>();
-                    list.Add("Class name: ServiceMethods, Method name: TelegramBotAPIInitiator");
+                    list.Add("ServiceName: TelegramBotService, ClassName: ServiceMethods, MethodName: TelegramBotAPIInitiator");
                     list.Add("Exception occurred for Name: " + e.Message.Chat.FirstName + " " + e.Message.Chat.LastName + ", Username: " + e.Message.Chat.Username + ", Message: " + e.Message.Text);
                     list.Add("Message:  " + ex?.Message?.ToString());
                     list.Add("StackTrace:  " + ex?.StackTrace?.ToString());
                     list.Add("InnerException.Message:  " + Convert.ToString(ex?.InnerException?.Message));
                     list.Add("InnerException.StackTrace:  " + Convert.ToString(ex?.InnerException?.StackTrace));
                     await telegramBotClient.SendTextMessageAsync(1715334607, exceptionStringBuilder(list.ToArray()));
+                    System.Threading.Thread.Sleep(5000);
                     #endregion
                 }
             }
@@ -1372,7 +1421,8 @@ namespace TelegramBotService
                 }
                 if (finalList.Count > 0)
                 {
-                    using (var stream = File.Open(Convert.ToString(ConfigurationManager.AppSettings["EpicPhotoPath"]), FileMode.Open))
+                    string file = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\EpicGame.jpg";
+                    using (var stream = File.Open(file, FileMode.Open))
                     {
                         var rep = await telegramBotClient.SendPhotoAsync(ID, stream, gameStringBuilder(null, finalList));
                     }
@@ -1386,13 +1436,14 @@ namespace TelegramBotService
             {
                 #region Exception
                 List<string> list = new List<string>();
-                list.Add("Class name: ServiceMethods, Method name: TelegramBotGameAPIInitiator");
+                list.Add("ServiceName: TelegramBotService, ClassName: ServiceMethods, MethodName: TelegramBotGameAPIInitiator");
                 list.Add("Exception occurred for Name: " + e.Message.Chat.FirstName + " " + e.Message.Chat.LastName + ", Username: " + e.Message.Chat.Username + ", Message: " + e.Message.Text);
                 list.Add("Message:  " + ex?.Message?.ToString());
                 list.Add("StackTrace:  " + ex?.StackTrace?.ToString());
                 list.Add("InnerException.Message:  " + Convert.ToString(ex?.InnerException?.Message));
                 list.Add("InnerException.StackTrace:  " + Convert.ToString(ex?.InnerException?.StackTrace));
                 await telegramBotClient.SendTextMessageAsync(1715334607, exceptionStringBuilder(list.ToArray()));
+                System.Threading.Thread.Sleep(5000);
                 #endregion
             }
         }
@@ -1445,13 +1496,14 @@ namespace TelegramBotService
             {
                 #region Exception
                 List<string> list = new List<string>();
-                list.Add("Class name: ServiceMethods, Method name: TelegramBotWeatherAPIInitiator");
+                list.Add("ServiceName: TelegramBotService, ClassName: ServiceMethods, MethodName: TelegramBotWeatherAPIInitiator");
                 list.Add("Exception occurred for Name: " + e.Message.Chat.FirstName + " " + e.Message.Chat.LastName + ", Username: " + e.Message.Chat.Username + ", Message: " + e.Message.Text);
                 list.Add("Message:  " + ex?.Message?.ToString());
                 list.Add("StackTrace:  " + ex?.StackTrace?.ToString());
                 list.Add("InnerException.Message:  " + Convert.ToString(ex?.InnerException?.Message));
                 list.Add("InnerException.StackTrace:  " + Convert.ToString(ex?.InnerException?.StackTrace));
                 await telegramBotClient.SendTextMessageAsync(1715334607, exceptionStringBuilder(list.ToArray()));
+                System.Threading.Thread.Sleep(5000);
                 #endregion
             }
         }
@@ -1580,7 +1632,7 @@ namespace TelegramBotService
                     {
                         #region Exception
                         List<string> list = new List<string>();
-                        list.Add("Class name: ServiceMethods, Method name: TelegramBotCovidInfoAPIInitiator - Data Mapping issue");
+                        list.Add("ServiceName: TelegramBotService, ClassName: ServiceMethods, MethodName: TelegramBotCovidInfoAPIInitiator - Data Mapping issue");
                         list.Add("Exception occurred for Name: " + e.Message.Chat.FirstName + " " + e.Message.Chat.LastName + ", Username: " + e.Message.Chat.Username + ", Message: " + e.Message.Text);
                         list.Add("Message:  " + ex?.Message?.ToString());
                         list.Add("StackTrace:  " + ex?.StackTrace?.ToString());
@@ -1588,6 +1640,7 @@ namespace TelegramBotService
                         list.Add("InnerException.StackTrace:  " + Convert.ToString(ex?.InnerException?.StackTrace));
                         await telegramBotClient.SendTextMessageAsync(1715334607, exceptionStringBuilder(list.ToArray()));
                         await telegramBotClient.SendTextMessageAsync(e.Message.Chat.Id, "Techincal glitch spotted. Please try later!");
+                        System.Threading.Thread.Sleep(5000);
                         #endregion
                     }
                 }
@@ -1596,13 +1649,14 @@ namespace TelegramBotService
             {
                 #region Exception
                 List<string> list = new List<string>();
-                list.Add("Class name: ServiceMethods, Method name: TelegramBotCovidInfoAPIInitiator");
+                list.Add("ServiceName: TelegramBotService, ClassName: ServiceMethods, MethodName: TelegramBotCovidInfoAPIInitiator");
                 list.Add("Exception occurred for Name: " + e.Message.Chat.FirstName + " " + e.Message.Chat.LastName + ", Username: " + e.Message.Chat.Username + ", Message: " + e.Message.Text);
                 list.Add("Message:  " + ex?.Message?.ToString());
                 list.Add("StackTrace:  " + ex?.StackTrace?.ToString());
                 list.Add("InnerException.Message:  " + Convert.ToString(ex?.InnerException?.Message));
                 list.Add("InnerException.StackTrace:  " + Convert.ToString(ex?.InnerException?.StackTrace));
                 await telegramBotClient.SendTextMessageAsync(1715334607, exceptionStringBuilder(list.ToArray()));
+                System.Threading.Thread.Sleep(5000);
                 #endregion
             }
         }
@@ -1658,13 +1712,14 @@ namespace TelegramBotService
             {
                 #region Exception
                 List<string> list = new List<string>();
-                list.Add("Class name: ServiceMethods, Method name: TelegramBotSearchAPIInitiator");
+                list.Add("ServiceName: TelegramBotService, ClassName: ServiceMethods, MethodName: TelegramBotSearchAPIInitiator");
                 list.Add("Exception occurred for Name: " + e.Message.Chat.FirstName + " " + e.Message.Chat.LastName + ", Username: " + e.Message.Chat.Username + ", Message: " + e.Message.Text);
                 list.Add("Message:  " + ex?.Message?.ToString());
                 list.Add("StackTrace:  " + ex?.StackTrace?.ToString());
                 list.Add("InnerException.Message:  " + Convert.ToString(ex?.InnerException?.Message));
                 list.Add("InnerException.StackTrace:  " + Convert.ToString(ex?.InnerException?.StackTrace));
                 await telegramBotClient.SendTextMessageAsync(1715334607, exceptionStringBuilder(list.ToArray()));
+                System.Threading.Thread.Sleep(5000);
                 #endregion
             }
         }
@@ -1713,7 +1768,7 @@ namespace TelegramBotService
                     {
                         #region Exception
                         List<string> list = new List<string>();
-                        list.Add("Class name: ServiceMethods, Method name: TelegramBotHoroscopeAPIInitiator - Adding data to List");
+                        list.Add("ServiceName: TelegramBotService, ClassName: ServiceMethods, MethodName: TelegramBotHoroscopeAPIInitiator - Adding data to List");
                         list.Add("Exception occurred for Name: " + e.Message.Chat.FirstName + " " + e.Message.Chat.LastName + ", Username: " + e.Message.Chat.Username + ", Message: " + e.Message.Text);
                         list.Add("Message:  " + ex?.Message?.ToString());
                         list.Add("StackTrace:  " + ex?.StackTrace?.ToString());
@@ -1721,6 +1776,7 @@ namespace TelegramBotService
                         list.Add("InnerException.StackTrace:  " + Convert.ToString(ex?.InnerException?.StackTrace));
                         await telegramBotClient.SendTextMessageAsync(e.Message.Chat.Id, "No data found!");
                         await telegramBotClient.SendTextMessageAsync(1715334607, exceptionStringBuilder(list.ToArray()));
+                        System.Threading.Thread.Sleep(5000);
                         #endregion
                     }
                 }
@@ -1729,13 +1785,14 @@ namespace TelegramBotService
             {
                 #region Exception
                 List<string> list = new List<string>();
-                list.Add("Class name: ServiceMethods, Method name: TelegramBotHoroscopeAPIInitiator");
+                list.Add("ServiceName: TelegramBotService, ClassName: ServiceMethods, MethodName: TelegramBotHoroscopeAPIInitiator");
                 list.Add("Exception occurred for Name: " + e.Message.Chat.FirstName + " " + e.Message.Chat.LastName + ", Username: " + e.Message.Chat.Username + ", Message: " + e.Message.Text);
                 list.Add("Message:  " + ex?.Message?.ToString());
                 list.Add("StackTrace:  " + ex?.StackTrace?.ToString());
                 list.Add("InnerException.Message:  " + Convert.ToString(ex?.InnerException?.Message));
                 list.Add("InnerException.StackTrace:  " + Convert.ToString(ex?.InnerException?.StackTrace));
                 await telegramBotClient.SendTextMessageAsync(1715334607, exceptionStringBuilder(list.ToArray()));
+                System.Threading.Thread.Sleep(5000);
                 #endregion
             }
         }
@@ -1801,7 +1858,7 @@ namespace TelegramBotService
                     catch (Exception ex)
                     {
                         List<string> list = new List<string>();
-                        list.Add("Class name: ServiceMethods, Method name: TelegramBotStockAPIInitiator - Adding result to List");
+                        list.Add("ServiceName: TelegramBotService, ClassName: ServiceMethods, MethodName: TelegramBotStockAPIInitiator - Adding result to List");
                         list.Add("Exception occurred for Name: " + e.Message.Chat.FirstName + " " + e.Message.Chat.LastName + ", Username: " + e.Message.Chat.Username + ", Message: " + e.Message.Text);
                         list.Add("Message:  " + ex?.Message?.ToString());
                         list.Add("StackTrace:  " + ex?.StackTrace?.ToString());
@@ -1809,6 +1866,7 @@ namespace TelegramBotService
                         list.Add("InnerException.StackTrace:  " + Convert.ToString(ex?.InnerException?.StackTrace));
                         await telegramBotClient.SendTextMessageAsync(e.Message.Chat.Id, "No data found!");
                         await telegramBotClient.SendTextMessageAsync(1715334607, exceptionStringBuilder(list.ToArray()));
+                        System.Threading.Thread.Sleep(5000);
                     }
 
                 }
@@ -1817,13 +1875,14 @@ namespace TelegramBotService
             {
                 #region Exception
                 List<string> list = new List<string>();
-                list.Add("Class name: ServiceMethods, Method name: TelegramBotStockAPIInitiator");
+                list.Add("ServiceName: TelegramBotService, ClassName: ServiceMethods, MethodName: TelegramBotStockAPIInitiator");
                 list.Add("Exception occurred for Name: " + e.Message.Chat.FirstName + " " + e.Message.Chat.LastName + ", Username: " + e.Message.Chat.Username + ", Message: " + e.Message.Text);
                 list.Add("Message:  " + ex?.Message?.ToString());
                 list.Add("StackTrace:  " + ex?.StackTrace?.ToString());
                 list.Add("InnerException.Message:  " + Convert.ToString(ex?.InnerException?.Message));
                 list.Add("InnerException.StackTrace:  " + Convert.ToString(ex?.InnerException?.StackTrace));
                 await telegramBotClient.SendTextMessageAsync(1715334607, exceptionStringBuilder(list.ToArray()));
+                System.Threading.Thread.Sleep(5000);
                 #endregion
             }
         }
@@ -1835,34 +1894,41 @@ namespace TelegramBotService
             //while (true)
             //{
             string req = Client.GetHTML("https://www.amazon.in/dp/B08FV5GC28/");
-            var data = !req.Contains("<span class=\"a-color-price a-text-bold\">Currently unavailable.</span>");
-            if (data)
+            if (!string.IsNullOrWhiteSpace(req))
             {
-                await telegramBotClient.SendTextMessageAsync(e.Message.Chat.Id, "PS5 is available! on https://www.amazon.in/dp/B08FV5GC28/");
-            }
-            string req2 = Client.GetHTML("https://www.flipkart.com/sony-playstation-5-cfi-1008a01r-825-gb-astro-s-playroom/p/itma0201bdea62fa");
-            var data2 = !req2.Contains("<div class=\"_16FRp0\">Coming Soon</div>");
-            if (data2)
-            {
-                await telegramBotClient.SendTextMessageAsync(e.Message.Chat.Id, "PS5 is available! on https://www.flipkart.com/sony-playstation-5-cfi-1008a01r-825-gb-astro-s-playroom/p/itma0201bdea62fa");
-            }
+                var data = !req.Contains("<span class=\"a-color-price a-text-bold\">Currently unavailable.</span>");
+                if (data)
+                {
+                    await telegramBotClient.SendTextMessageAsync(e.Message.Chat.Id, "PS5 is available! on https://www.amazon.in/dp/B08FV5GC28/");
+                }
+                string req2 = Client.GetHTML("https://www.flipkart.com/sony-playstation-5-cfi-1008a01r-825-gb-astro-s-playroom/p/itma0201bdea62fa");
+                var data2 = !req2.Contains("<div class=\"_16FRp0\">Coming Soon</div>");
+                if (data2)
+                {
+                    await telegramBotClient.SendTextMessageAsync(e.Message.Chat.Id, "PS5 is available! on https://www.flipkart.com/sony-playstation-5-cfi-1008a01r-825-gb-astro-s-playroom/p/itma0201bdea62fa");
+                }
 
-            if (!data && !data2)
+                if (!data && !data2)
+                    await telegramBotClient.SendTextMessageAsync(e.Message.Chat.Id, "Not in stock yet!");
+                //}
+
+                //var client = new RestClient("https://www.amazon.in/dp/B08FV5GC28/");
+                //client.Timeout = -1;
+                //var request = new RestRequest(Method.GET);
+                //while (true)
+                //{
+                //    IRestResponse response = client.Execute(request);
+                //    var isAvailable = !response.Content.Contains("<span class=\"a-color-price a-text-bold\">Currently unavailable.</span>");
+                //    if(isAvailable)
+                //    {
+                //        await telegramBotClient.SendTextMessageAsync(e.Message.Chat.Id, "PS5 is available! on https://www.amazon.in/dp/B08FV5GC28/");
+                //    }
+                //}
+            }
+            else
+            {
                 await telegramBotClient.SendTextMessageAsync(e.Message.Chat.Id, "Not in stock yet!");
-            //}
-
-            //var client = new RestClient("https://www.amazon.in/dp/B08FV5GC28/");
-            //client.Timeout = -1;
-            //var request = new RestRequest(Method.GET);
-            //while (true)
-            //{
-            //    IRestResponse response = client.Execute(request);
-            //    var isAvailable = !response.Content.Contains("<span class=\"a-color-price a-text-bold\">Currently unavailable.</span>");
-            //    if(isAvailable)
-            //    {
-            //        await telegramBotClient.SendTextMessageAsync(e.Message.Chat.Id, "PS5 is available! on https://www.amazon.in/dp/B08FV5GC28/");
-            //    }
-            //}
+            }
         }
 
         public async static void TelegramBotInsta360GO2StockAPIInitiator(long ID, string stock, Telegram.Bot.Args.MessageEventArgs e = null)
